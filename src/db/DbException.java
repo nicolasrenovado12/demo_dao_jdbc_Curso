@@ -1,4 +1,4 @@
-package program_210;
+package db;
 
 public class DbException extends Exception {
 
