@@ -13,7 +13,7 @@ import model.dao.SellerDao;
 import model.entities.Department;
 import model.entities.Seller;
 
-public class SellerDaoJDBC implements SellerDao {
+public class SellerDaoJDBC  implements SellerDao  {
 
 	private Connection conn;
 	
@@ -55,22 +55,14 @@ public class SellerDaoJDBC implements SellerDao {
 			
 			rs = pst.executeQuery();
 			if (rs.next()) {
-				Department department = new Department(rs.getInt("DepartmentId"),
-													   rs.getString("DepName"));
-				Seller seller = new Seller(
-						rs.getInt("Id"), 
-						rs.getString("Name"),
-						rs.getString("Email"),
-						new java.sql.Date
-						(rs.getDate("BirthDate").getTime()),
-						rs.getDouble("BaseSalary"), 
-						department);
+				Department department = instanciateDepartment(rs);
+				Seller seller = instanciateSeller(rs, department);
 				
 				return seller;
 			}
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new DbException(e.getMessage());
 		} 
 		finally {
 			DB.closeStatement(pst);
@@ -80,6 +72,34 @@ public class SellerDaoJDBC implements SellerDao {
 		
 		
 		return null;
+	}
+
+	private Seller instanciateSeller(ResultSet rs, Department department ) {
+		Seller seller = null;
+		try {
+			seller = new Seller(
+					rs.getInt("Id"), 
+					rs.getString("Name"),
+					rs.getString("Email"),
+					new java.sql.Date
+					(rs.getDate("BirthDate").getTime()),
+					rs.getDouble("BaseSalary"), 
+					department);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return seller;
+	}
+
+	private Department instanciateDepartment(ResultSet rs) {
+		Department dep=null;
+		try {
+			dep = new Department(rs.getInt("DepartmentId"),
+					   			rs.getString("DepName"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return dep;
 	}
 
 	@Override
