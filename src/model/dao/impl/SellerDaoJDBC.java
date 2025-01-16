@@ -41,7 +41,6 @@ public class SellerDaoJDBC  implements SellerDao  {
 
 	@Override
 	public Seller findById(Integer id) {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		
