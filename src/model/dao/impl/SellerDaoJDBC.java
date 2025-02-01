@@ -16,7 +16,7 @@ import model.dao.SellerDao;
 import model.entities.Department;
 import model.entities.Seller;
 
-public class SellerDaoJDBC  implements SellerDao  {
+public class SellerDaoJDBC implements SellerDao  {
 
 	private Connection conn;
 	
@@ -49,7 +49,8 @@ public class SellerDaoJDBC  implements SellerDao  {
 					obj.setId(id);
 
 				}
-			DB.closeResultSet(rs);
+				DB.closeResultSet(rs);
+
 			} else {
 				throw new DbException("Unexpected error! No rows affected! ");
 			}
@@ -59,7 +60,6 @@ public class SellerDaoJDBC  implements SellerDao  {
 
 		} finally {
 			DB.closeStatement(st);
-			DB.closeResultSet(rs);
 
 		}
 	}
@@ -82,10 +82,8 @@ public class SellerDaoJDBC  implements SellerDao  {
 
 			st.executeUpdate(); 
 			
-
 		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
-
 		} finally {
 			DB.closeStatement(st);
 		}
@@ -104,11 +102,14 @@ public class SellerDaoJDBC  implements SellerDao  {
 					Statement.RETURN_GENERATED_KEYS);
 			st.setInt(1, id);
 
-			st.executeUpdate(); 
+			int rows = st.executeUpdate(); 
+
+			if (rows == 0) {
+				throw new DbException("Unexpected Error");
+			}
 
 		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
-
 		} finally {
 			DB.closeStatement(st);
 		}
@@ -145,6 +146,7 @@ public class SellerDaoJDBC  implements SellerDao  {
 		
 		
 		return null;
+	
 	}
 
 	private Seller instantiateSeller(ResultSet rs, Department department ) {
